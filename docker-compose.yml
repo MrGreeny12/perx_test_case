@@ -1,0 +1,51 @@
+version: "3.7"
+
+networks:
+  perx_network:
+    driver: bridge
+
+services:
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - perx_network
+
+  db:
+    image: postgres:12.8
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - perx_network
+
+  web:
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8000
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./files:/perx/files
+    env_file:
+      - ./.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - perx_network
+
+  worker:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A project_config worker -l INFO
+    depends_on:
+      - redis
+      - db
+    networks:
+      - perx_network

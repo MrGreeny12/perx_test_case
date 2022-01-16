@@ -4,11 +4,6 @@ import openpyxl
 from excel_parser.models import ExcelDocument, DocumentProcessingStatuses
 
 
-# TODO: создать сигнал, реагирующий на добавление документа и исполняющий обработку файла
-# TODO: создать сигнал, реагирующий на удаление элемента и удаляющий файл из media
-# TODO: запускать всё в задачах celery
-# TODO: перенести всё в Docker
-# TODO: написать тесты и документацию
 class Document():
 
     def __init__(self, document_id: int):
@@ -58,8 +53,3 @@ class Document():
             self.document.save_result(result=f'removed: {before_list[1] - after_list[1]}')
 
         self.wb.close()
-
-
-if __name__ == '__main__':
-    doc = Document(document_id=2)
-    doc.get_result()
